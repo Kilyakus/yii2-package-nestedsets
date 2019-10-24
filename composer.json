@@ -1,0 +1,25 @@
+{
+  "name": "kilyakus/yii2-widget-nestedsets",
+  "description": "Package",
+  "type": "yii2-extension",
+  "license": "MIT",
+  "authors": [
+    {
+	  "name1": "Arno Slatius",
+	  "email1": "a.slatius@gmail.com",
+      "name2": "Sergey Klimenchuk",
+      "email2": "ksl80@ukr.net"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "yiisoft/yii2": "~2.0.0",
+	"kartik-v/yii2-krajee-base": "*",
+	"creocoder/yii2-nested-sets": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "kilyakus\\nestable\\": "src"
+    }
+  }
+}
