@@ -406,6 +406,11 @@ class NestedSetsBehavior extends Behavior
         $this->shiftLeftRightAttribute($rightValue + 1, $leftValue - $rightValue - 1);
     }
 
+    public function nodeMove($value, $depth) {
+        $this->node = $this->owner;
+        self::moveNode($value, $depth);
+    }
+
     protected function moveNode($value, $depth)
     {
         $db = $this->owner->getDb();
