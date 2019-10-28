@@ -74,6 +74,8 @@ class Nestable extends \kartik\base\Widget
 	*/
 	public $query;
 
+	public $filter = [];
+
 	/**
 	* @var array options to be used with the model on list preparation. Supporten properties:
 	* - name: {string|function}, attribute name for the item title or unnamed function($model) that returns a
