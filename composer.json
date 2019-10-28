@@ -1,25 +1,23 @@
 {
-  "name": "kilyakus/yii2-widget-nestedsets",
-  "description": "Package",
-  "type": "yii2-extension",
-  "license": "MIT",
-  "authors": [
-    {
-	  "name1": "Arno Slatius",
-	  "email1": "a.slatius@gmail.com",
-      "name2": "Sergey Klimenchuk",
-      "email2": "ksl80@ukr.net"
+    "name": "kilyakus/yii2-widget-nestedsets",
+    "type": "yii2-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Kochetov",
+            "email": "creocoder@gmail.com"
+        },
+        {
+            "name": "Edited by: Kilyakus",
+            "email": "aleksandr.kilyakov@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "kilyakus\\nestedsets\\": "src"
+        }
     }
-  ],
-  "minimum-stability": "stable",
-  "require": {
-    "yiisoft/yii2": "~2.0.0",
-	"kartik-v/yii2-krajee-base": "*",
-	"creocoder/yii2-nested-sets": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "kilyakus\\nestable\\": "src"
-    }
-  }
 }
