@@ -1,6 +1,7 @@
 <?php
 namespace kilyakus\nestedsets\widgets;
 
+use Yii;
 use yii\db\ActiveQuery;
 use yii\helpers\Url;
 use yii\helpers\Html;
@@ -17,10 +18,6 @@ class Nestable extends \kartik\base\Widget
     const STATUS_ON = 1;
     const STATUS_COPY = 2;
 
-	/**
-	 * @var string the type of the sortable widget
-	 * Defaults to Nestable::TYPE_WITH_HANDLE
-	 */
 	public $type = self::TYPE_WITH_HANDLE;
 
 	/**
@@ -72,7 +69,7 @@ class Nestable extends \kartik\base\Widget
 	/**
 	* @var ActiveQuery that holds the data for the tree to show.
 	*/
-	public $query;
+	public $dataProvider;
 
 	public $filter = [];
 
@@ -100,8 +97,8 @@ class Nestable extends \kartik\base\Widget
 		Html::addCssClass($this->options, 'dd');
 		echo Html::beginTag('div', $this->options);
 
-		if (null != $this->query) {
-			$this->items = $this->prepareItems($this->query);
+		if (null != $this->dataProvider) {
+			$this->items = $this->prepareItems($this->dataProvider);
 		}
 		if (count($this->items) === 0) {
 			echo Html::tag('div', '', ['class' => 'dd-empty']);
@@ -140,11 +137,44 @@ class Nestable extends \kartik\base\Widget
 
 				foreach ($dropdown['items'] as $d => $ditem) {
 					if(isset($ditem['url'])){
-						$dropdown['items'][$d]['url'] = Url::toRoute([$ditem['url'],'id' => $id]);
+						if(is_array($ditem['url'])){
+
+							$ditem['url'] = ArrayHelper::merge($ditem['url'],['id' => $id]);
+
+						}elseif(strpos($ditem['url'], '?') !== false){
+
+							$params = [];
+							$query = parse_url($ditem['url'], PHP_URL_QUERY);
+							$path = parse_url($ditem['url'], PHP_URL_PATH);
+							if($query = explode('&',$query)){
+								foreach ($query as $param) {
+									$qitems = explode('=', $param);
+									$params[$qitems[0]] = $qitems[1];
+								}
+							}
+							$ditem['url'] = ArrayHelper::merge([$path], $params, ['id' => $id]);
+
+						}else{
+
+							$ditem['url'] = ArrayHelper::merge([$ditem['url']], ['id' => $id]);
+
+						}
+						$dropdown['items'][$d]['url'] = Url::toRoute($ditem['url']);
 					}
 					if(isset($ditem['linkOptions']) && $ditem['linkOptions']['data-toggle'] == 'modal'){
-						$dropdown['items'][$d]['linkOptions']['data-target'] = '#modal-nestable-' . $id;
+						if($actionId = $ditem['linkOptions']['data-action']){
+							$actionId = $actionId . '-' . $id;
+						}else{
+							$actionId = $id;
+						}
+						$dropdown['items'][$d]['linkOptions']['data-target'] = '#modal-nestable-' . $actionId;
 						$dropdown['items'][$d]['linkOptions']['data-key'] = $id;
+					}
+					if(isset($ditem['linkOptions']) && $ditem['linkOptions']['data-type'] && ($type = ArrayHelper::getValue($this->modelOptions, 'type', 'type'))){
+						$dropdown['items'][$d]['linkOptions']['data-type'] = $item['type'];
+					}
+					if(isset($ditem['linkOptions']) && $ditem['linkOptions']['data-parent']){
+						$dropdown['items'][$d]['linkOptions']['data-parent'] = $item['id'];
 					}
 				}
 
@@ -243,7 +273,8 @@ class Nestable extends \kartik\base\Widget
 				'id'	   => $model->getPrimaryKey(),
 				// 'content'  => (is_callable($name) ? call_user_func($name, $model) : $model->{$name}),
 				'content' => $html,
-				'children' => $this->prepareItems($model->children(1)),
+				'children' => $this->prepareItems($model->children(1)->andFilterWhere($this->filter)),
+				'type' => $model->{ArrayHelper::getValue($this->modelOptions, 'type', 'type')}
 			];
 		}
 		return $items;

@@ -115,8 +115,6 @@ class NestedSetsBehavior extends Behavior
 
         $condition = [
             'and',
-            ['category_id' => $this->owner->category_id],
-            ['class' => $this->owner->class],
             ['>=', $this->leftAttribute, $this->owner->getAttribute($this->leftAttribute)],
             ['<=', $this->rightAttribute, $this->owner->getAttribute($this->rightAttribute)]
         ];
@@ -133,8 +131,6 @@ class NestedSetsBehavior extends Behavior
     {
         $condition = [
             'and',
-            ['category_id' => $this->owner->category_id],
-            ['class' => $this->owner->class],
             ['<', $this->leftAttribute, $this->owner->getAttribute($this->leftAttribute)],
             ['>', $this->rightAttribute, $this->owner->getAttribute($this->rightAttribute)],
         ];
@@ -157,8 +153,6 @@ class NestedSetsBehavior extends Behavior
     {
         $condition = [
             'and',
-            ['category_id' => $this->owner->category_id],
-            ['class' => $this->owner->class],
             ['>', $this->leftAttribute, $this->owner->getAttribute($this->leftAttribute)],
             ['<', $this->rightAttribute, $this->owner->getAttribute($this->rightAttribute)],
         ];
@@ -180,8 +174,6 @@ class NestedSetsBehavior extends Behavior
     {
         $condition = [
             'and',
-            ['category_id' => $this->owner->category_id],
-            ['class' => $this->owner->class],
             ['>', $this->leftAttribute, $this->owner->getAttribute($this->leftAttribute)],
             ['<', $this->rightAttribute, $this->owner->getAttribute($this->rightAttribute)],
             [$this->rightAttribute => new Expression($this->owner->getDb()->quoteColumnName($this->leftAttribute) . '+ 1')],
@@ -333,7 +325,7 @@ class NestedSetsBehavior extends Behavior
             case self::OPERATION_INSERT_BEFORE:
             case self::OPERATION_INSERT_AFTER:
                 if ($this->node->isRoot()) {
-                    throw new Exception('Can not move a node when the target node is root.');
+                    // throw new Exception('Can not move a node when the target node is root.');
                 }
             case self::OPERATION_PREPEND_TO:
             case self::OPERATION_APPEND_TO:
@@ -406,7 +398,8 @@ class NestedSetsBehavior extends Behavior
         $this->shiftLeftRightAttribute($rightValue + 1, $leftValue - $rightValue - 1);
     }
 
-    public function nodeMove($value, $depth) {
+    public function nodeMove($value, $depth)
+    {
         $this->node = $this->owner;
         self::moveNode($value, $depth);
     }
