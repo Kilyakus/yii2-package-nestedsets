@@ -1,10 +1,4 @@
 <?php
-/**
- * @link https://github.com/creocoder/yii2-nested-sets
- * @copyright Copyright (c) 2015 Alexander Kochetov
- * @license http://opensource.org/licenses/BSD-3-Clause
- */
-
 namespace kilyakus\nestedsets\behaviors;
 
 use yii\base\Behavior;
@@ -144,11 +138,6 @@ class NestedSetsBehavior extends Behavior
         return $this->owner->find()->andWhere($condition)->addOrderBy([$this->leftAttribute => SORT_ASC]);
     }
 
-    /**
-     * Gets the children of the node.
-     * @param integer|null $depth the depth
-     * @return \yii\db\ActiveQuery
-     */
     public function children($depth = null)
     {
         $condition = [
@@ -166,10 +155,6 @@ class NestedSetsBehavior extends Behavior
         return $this->owner->find()->andWhere($condition)->addOrderBy([$this->leftAttribute => SORT_ASC]);
     }
 
-    /**
-     * Gets the leaves of the node.
-     * @return \yii\db\ActiveQuery
-     */
     public function leaves()
     {
         $condition = [
@@ -184,10 +169,6 @@ class NestedSetsBehavior extends Behavior
         return $this->owner->find()->andWhere($condition)->addOrderBy([$this->leftAttribute => SORT_ASC]);
     }
 
-    /**
-     * Gets the previous sibling of the node.
-     * @return \yii\db\ActiveQuery
-     */
     public function prev()
     {
         $condition = [$this->rightAttribute => $this->owner->getAttribute($this->leftAttribute) - 1];
@@ -318,13 +299,31 @@ class NestedSetsBehavior extends Behavior
                 }
 
                 if ($this->owner->isRoot()) {
+
+                    // $this->swapNodeAsRoot();
                     throw new Exception('Can not move the root node as the root.');
                 }
 
                 break;
             case self::OPERATION_INSERT_BEFORE:
             case self::OPERATION_INSERT_AFTER:
+                // if($this->node->depth == 0 && !$this->node->isRoot()){
+                //     $this->node->makeRoot();
+                //     // $this->node->tree = $this->node->primaryKey;
+                //     // $this->node->update();
+
+                //     // if($nodeChildrens = $this->node->children()->all())
+                //     // {
+                //     //     foreach ($nodeChildrens as $nodeChildren) {
+                //     //         $nodeChildren->tree = $this->node->tree;
+                //     //         $nodeChildren->update();
+                //     //     }
+                //     // }
+                // }
                 if ($this->node->isRoot()) {
+
+                    $this->swapNodeAsRoot();
+
                     // throw new Exception('Can not move a node when the target node is root.');
                 }
             case self::OPERATION_PREPEND_TO:
@@ -398,6 +397,52 @@ class NestedSetsBehavior extends Behavior
         $this->shiftLeftRightAttribute($rightValue + 1, $leftValue - $rightValue - 1);
     }
 
+    protected function swapNodeAsRoot()
+    {
+        $class = get_class($this->owner);
+        $model = $class::findOne($this->owner->primaryKey);
+
+        $up = $this->operation == 'insertBefore';
+        $orderDir = $up ? SORT_ASC : SORT_DESC;
+
+        $swapCat = $this->node;
+
+        $needSwap = false;
+
+        $filter = [$this->treeAttribute => $this->owner->getAttribute($this->treeAttribute)];
+        $ignore = ['!=', $this->treeAttribute, $this->owner->getAttribute($this->treeAttribute)];
+
+        if($swapCat)
+        {
+
+            $model->order_num = ($up ? $swapCat->order_num+1 : $swapCat->order_num-1);
+            $model->update();
+
+            if($childrens = $model->children()->andFilterWhere($filter)->all())
+            {
+                foreach ($childrens as $children) {
+                    $children->order_num = $model->order_num;
+                    $children->update();
+                }
+            }
+
+            $modelsBefore = $class::find()->where(['>=', 'order_num', $model->order_num])->andFilterWhere($ignore)->orderBy(['order_num' => SORT_ASC])->all();
+
+            foreach ($modelsBefore as $modelBefore) {
+                $modelBefore->order_num = $modelBefore->order_num+1;
+                $modelBefore->update();
+            }
+
+            $modelsAfter = $class::find()->where(['<=', 'order_num', $model->order_num])->andFilterWhere($ignore)->orderBy(['order_num' => SORT_ASC])->all();
+
+            foreach ($modelsAfter as $modelAfter) {
+                $modelAfter->order_num = $modelAfter->order_num-1;
+                $modelAfter->update();
+            }
+
+        }
+    }
+
     public function nodeMove($value, $depth)
     {
         $this->node = $this->owner;
@@ -414,7 +459,7 @@ class NestedSetsBehavior extends Behavior
         $depth = $this->node->getAttribute($this->depthAttribute) - $depthValue + $depth;
 
         if ($this->treeAttribute === false
-            || $this->owner->getAttribute($this->treeAttribute) === $this->node->getAttribute($this->treeAttribute)) {
+            || $this->owner->getAttribute($this->treeAttribute) === $this->node->getAttribute($this->treeAttribute) || $this->owner->getAttribute($this->treeAttribute) === $this->owner->primaryKey && $this->owner->getAttribute($this->depthAttribute) != 0) {
             $delta = $rightValue - $leftValue + 1;
             $this->shiftLeftRightAttribute($value, $delta);
 
@@ -462,6 +507,7 @@ class NestedSetsBehavior extends Behavior
                     $this->rightAttribute => new Expression($rightAttribute . sprintf('%+d', $delta)),
                     $this->depthAttribute => new Expression($depthAttribute . sprintf('%+d', $depth)),
                     $this->treeAttribute => $nodeRootValue,
+                    // 'order_num' => $this->owner->order_num,
                 ],
                 [
                     'and',

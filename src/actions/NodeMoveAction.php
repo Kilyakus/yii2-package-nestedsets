@@ -6,7 +6,7 @@
  * @version 1.0
  */
 
-namespace kilyakus\nestedsets\widgets;
+namespace kilyakus\nestedsets\actions;
 
 use Yii;
 use yii\base\Action;
@@ -54,7 +54,7 @@ class NodeMoveAction extends Action
 
         /* attach our bahaviour to be able to call the moveNode() function of the NestedSetsBehavior */
         $model->attachBehavior('nestable', [
-            'class' => \klisl\nestable\NestableBehavior::className(),
+            'class' => NestedSetsBehavior::className(),
             'leftAttribute' => $this->leftAttribute,
             'rightAttribute' => $this->rightAttribute,
             'treeAttribute' => $this->treeAttribute,
