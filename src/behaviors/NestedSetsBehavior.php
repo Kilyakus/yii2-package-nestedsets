@@ -379,6 +379,7 @@ class NestedSetsBehavior extends Behavior
         $rightAttribute = $db->quoteColumnName($this->rightAttribute);
         $depthAttribute = $db->quoteColumnName($this->depthAttribute);
 
+        // var_dump($this->own);die;
         $this->owner->updateAll(
             [
                 $this->leftAttribute => new Expression($leftAttribute . sprintf('%+d', 1 - $leftValue)),
@@ -459,7 +460,8 @@ class NestedSetsBehavior extends Behavior
         $depth = $this->node->getAttribute($this->depthAttribute) - $depthValue + $depth;
 
         if ($this->treeAttribute === false
-            || $this->owner->getAttribute($this->treeAttribute) === $this->node->getAttribute($this->treeAttribute) || $this->owner->getAttribute($this->treeAttribute) === $this->owner->primaryKey && $this->owner->getAttribute($this->depthAttribute) != 0) {
+            || $this->owner->getAttribute($this->treeAttribute) === $this->node->getAttribute($this->treeAttribute)
+        ) {
             $delta = $rightValue - $leftValue + 1;
             $this->shiftLeftRightAttribute($value, $delta);
 
@@ -472,7 +474,9 @@ class NestedSetsBehavior extends Behavior
             $this->applyTreeAttributeCondition($condition);
 
             $this->owner->updateAll(
-                [$this->depthAttribute => new Expression($depthAttribute . sprintf('%+d', $depth))],
+                [
+                    $this->depthAttribute => new Expression($depthAttribute . sprintf('%+d', $depth))
+                ],
                 $condition
             );
 
@@ -490,7 +494,21 @@ class NestedSetsBehavior extends Behavior
         } else {
             $leftAttribute = $db->quoteColumnName($this->leftAttribute);
             $rightAttribute = $db->quoteColumnName($this->rightAttribute);
-            $nodeRootValue = $this->node->getAttribute($this->treeAttribute);
+            if($this->owner->isRoot()){
+                if($this->node->isRoot() && $this->operation != 'appendTo' && $this->operation != 'prependTo'){
+                    $nodeRootValue = $this->owner->primaryKey;
+                }else{
+                    $nodeRootValue = $this->node->getAttribute($this->treeAttribute);
+                }
+            }else{
+                if($this->owner->getAttribute($this->depthAttribute) != 0){
+                    $nodeRootValue = $this->node->getAttribute($this->treeAttribute);
+                }else{
+                    $nodeRootValue = $this->owner->getAttribute($this->treeAttribute);
+                }
+            }
+
+            $orderDirValue = $this->node->getAttribute('order_num');
 
             foreach ([$this->leftAttribute, $this->rightAttribute] as $attribute) {
                 $this->owner->updateAll(
@@ -507,7 +525,7 @@ class NestedSetsBehavior extends Behavior
                     $this->rightAttribute => new Expression($rightAttribute . sprintf('%+d', $delta)),
                     $this->depthAttribute => new Expression($depthAttribute . sprintf('%+d', $depth)),
                     $this->treeAttribute => $nodeRootValue,
-                    // 'order_num' => $this->owner->order_num,
+                    'order_num' => $orderDirValue,
                 ],
                 [
                     'and',
