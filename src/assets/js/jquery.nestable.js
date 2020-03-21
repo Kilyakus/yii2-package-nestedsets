@@ -199,6 +199,8 @@
 
         expandItem: function(li)
         {
+            // var cookieId = '#' + this.el.get(0).id + ' [data-id=' + li.attr('data-id') + ']';
+            // console.log($(cookieId))
             li.removeClass(this.options.collapsedClass);
             li.children('[data-action="expand"]').hide();
             li.children('[data-action="collapse"]').show();

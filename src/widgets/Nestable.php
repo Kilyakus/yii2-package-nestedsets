@@ -7,9 +7,10 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
+use kilyakus\imageprocessor\Image;
 use kilyakus\web\widgets as Widget;
 
-class Nestable extends \kartik\base\Widget
+class Nestable extends \kilyakus\widgets\Widget
 {
 	const TYPE_LIST = 'list';
 	const TYPE_WITH_HANDLE = 'list-handle';
@@ -66,9 +67,6 @@ class Nestable extends \kartik\base\Widget
 	*/
 	public $url;
 
-	/**
-	* @var ActiveQuery that holds the data for the tree to show.
-	*/
 	public $dataProvider;
 
 	public $filter = [];
@@ -82,7 +80,6 @@ class Nestable extends \kartik\base\Widget
 
 	public $columns = [];
 
-	/** @var  string URL for update*/
 	public $actions = [];
 
 	public function init() {
@@ -91,6 +88,7 @@ class Nestable extends \kartik\base\Widget
 		} else {
 			$this->pluginOptions['url'] = Url::to([$this->view->context->id.'/nodeMove']);
 		}
+		
 		parent::init();
 		$this->registerAssets();
 
@@ -114,16 +112,21 @@ class Nestable extends \kartik\base\Widget
 		echo Html::endTag('div');
 	}
 
-	protected function renderItems($_items = NULL) {
-
-
+	protected function renderItems($_items = NULL)
+	{
 		$_items = is_null($_items) ? $this->items : $_items;
 		$items = '';
 		$dataid = 0;
 		foreach ($_items as $item) {
 
+			$model = (object)$item;
+
 			$options = ArrayHelper::getValue($item, 'options', ['class' => 'dd-item dd3-item' . ($item['children'] ? ' dd-childrens' : '') ]);
-			$options = ArrayHelper::merge($this->itemOptions, $options);
+			if(is_array($options)){
+				$options = ArrayHelper::merge($this->itemOptions, $options);
+			}else{
+				$options = ['class' => 'dd-item dd3-item' . ($item['children'] ? ' dd-childrens' : '') ];
+			}
 			$dataId  = ArrayHelper::getValue($item, 'id', $dataid++);
 			$options = ArrayHelper::merge($options, ['data-id' => $dataId]);
 
@@ -133,11 +136,31 @@ class Nestable extends \kartik\base\Widget
 			$id = $item['id']; //id item
 
 			//create links (GridView) for viewing and manipulating the items.
-			if(($dropdown = $this->actions['dropdown']) && $this->actions['dropdown']['items']){
+			if(is_array($this->actions) && ($dropdown = $this->actions['dropdown']) && $this->actions['dropdown']['items']){
 
 				foreach ($dropdown['items'] as $d => $ditem) {
+
+					if(isset($ditem['label'])){
+						if ($ditem['label'] instanceof \Closure) {
+							$ditem['label'] = call_user_func($ditem['label'], $model);
+							$dropdown['items'][$d]['label'] = $ditem['label'];
+						}
+					}
+
+					if(isset($ditem['icon'])){
+						if ($ditem['icon'] instanceof \Closure) {
+							$ditem['icon'] = call_user_func($ditem['icon'], $model);
+							$dropdown['items'][$d]['icon'] = $ditem['icon'];
+						}
+					}
+
 					if(isset($ditem['url'])){
-						if(is_array($ditem['url'])){
+
+						if ($ditem['url'] instanceof \Closure) {
+
+							$ditem['url'] = call_user_func($ditem['url'], $model);
+
+						}elseif(is_array($ditem['url'])){
 
 							$ditem['url'] = ArrayHelper::merge($ditem['url'],['id' => $id]);
 
@@ -159,23 +182,17 @@ class Nestable extends \kartik\base\Widget
 							$ditem['url'] = ArrayHelper::merge([$ditem['url']], ['id' => $id]);
 
 						}
-						$dropdown['items'][$d]['url'] = Url::toRoute($ditem['url']);
+						$dropdown['items'][$d]['url'] = $ditem['url'];
 					}
-					if(isset($ditem['linkOptions']) && $ditem['linkOptions']['data-toggle'] == 'modal'){
-						if($actionId = $ditem['linkOptions']['data-action']){
-							$actionId = $actionId . '-' . $id;
-						}else{
-							$actionId = $id;
+
+					if(isset($ditem['linkOptions'])){
+						if ($ditem['linkOptions'] instanceof \Closure) {
+							$ditem['linkOptions'] = call_user_func($ditem['linkOptions'], $model);
+							$dropdown['items'][$d]['linkOptions'] = $ditem['linkOptions'];
 						}
-						$dropdown['items'][$d]['linkOptions']['data-target'] = '#modal-nestable-' . $actionId;
-						$dropdown['items'][$d]['linkOptions']['data-key'] = $id;
 					}
-					if(isset($ditem['linkOptions']) && $ditem['linkOptions']['data-type'] && ($type = ArrayHelper::getValue($this->modelOptions, 'type', 'type'))){
-						$dropdown['items'][$d]['linkOptions']['data-type'] = $item['type'];
-					}
-					if(isset($ditem['linkOptions']) && $ditem['linkOptions']['data-parent']){
-						$dropdown['items'][$d]['linkOptions']['data-parent'] = $item['id'];
-					}
+
+					$dropdown['items'][$d]['linkOptions']['data-key'] = $id;
 				}
 
 				// $spanView = Html::tag('span', null, ['class' => "glyphicon glyphicon-eye-open"]);
@@ -225,15 +242,20 @@ class Nestable extends \kartik\base\Widget
 
 			$icon = (is_callable($icon) ? call_user_func($icon, $model) : $model->{$icon});
 
-			$icon = Html::img(\kilyakus\imageprocessor\Image::thumb($icon,22,22),['class' => 'img-rounded']);
+			$icon = Html::img(Image::thumb($icon,22,22),['class' => 'img-rounded']);
 
 			$content[] = Html::tag('td', $icon, ['style' => 'width:30px;min-width:30px;']);
 
 			$name = ArrayHelper::getValue($this->modelOptions, 'name', 'name');
 
-			$width = (320 - ($model->depth > 0 ? ( $model->depth * ($model->children()->count() ? 30 : 0) ) : 0));
+			$width = 320 - (
+				($model->depth > 0)
+				? (
+					$model->depth * 30 - (!$model->children(1)->andFilterWhere($this->filter)->count() ? 30 : 0)
+				) : 0
+			);
 
-			$content[] = Html::tag('td', (is_callable($name) ? call_user_func($name, $model) : $model->{$name}), ['style' => 'width:' . $width . 'px;min-width:' . $width . 'px;']);
+			$content[] = Html::tag('td', (is_callable($name) ? call_user_func($name, $model) : $model->{$name}), ['style' => 'min-width:' . $width . 'px;']);
 
 			foreach ($this->columns as $m => $option) {
 				if(!is_array($option)){
@@ -244,7 +266,12 @@ class Nestable extends \kartik\base\Widget
 						$value = (is_callable($column) ? call_user_func($column, $model) : $model->{$column});
 						$width = ['style' => 'width:' . $option['width'] . ';min-width:' . $option['width'] . ';'];
 						$option['options'] = !$option['options'] ? ArrayHelper::merge([],$width) : ArrayHelper::merge($option['options'],$width);
-						$content[$column] = Html::tag('td', $value, $option['options']);
+
+						if ($column instanceof \Closure) {
+							$content[$m] = Html::tag('td', call_user_func($column, $model), $option['options']);
+						}else{
+							$content[$column] = Html::tag('td', $value, $option['options']);
+						}
 					}
 				}
 			}
@@ -269,13 +296,21 @@ class Nestable extends \kartik\base\Widget
 
 			$html = Html::tag('table', $html, ['class' => 'w-100']);
 
-			$items[] = [
+			$columns = [
 				'id'	   => $model->getPrimaryKey(),
 				// 'content'  => (is_callable($name) ? call_user_func($name, $model) : $model->{$name}),
 				'content' => $html,
 				'children' => $this->prepareItems($model->children(1)->andFilterWhere($this->filter)),
-				'type' => $model->{ArrayHelper::getValue($this->modelOptions, 'type', 'type')}
+				'type' => isset($model->{ArrayHelper::getValue($this->modelOptions, 'type', 'type')}) ? $model->{ArrayHelper::getValue($this->modelOptions, 'type', 'type')} : null,
 			];
+
+			foreach ($this->columns as $column => $values) {
+				if(!$columns[$column]){
+					$columns[$column] = $model->{$column};
+				}
+			}
+
+			$items[] = $columns;
 		}
 		return $items;
 	}

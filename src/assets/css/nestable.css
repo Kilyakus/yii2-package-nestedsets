@@ -196,7 +196,7 @@ li.dd-item.dd-childrens:before {
     display: block;
     width: 1px;
     height: 100%;
-    height: calc(100% - 26px);
+    height: calc(100% - 29px);
     
     top: 11px;
     bottom: 0;

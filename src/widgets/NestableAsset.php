@@ -1,7 +1,7 @@
 <?php
 namespace kilyakus\nestedsets\widgets;
 
-class NestableAsset extends \kartik\base\AssetBundle {
+class NestableAsset extends \kilyakus\widgets\AssetBundle {
 
 	public function init() {
 		$this->setSourcePath(__DIR__ . '/../assets');
