@@ -1,183 +1,188 @@
 .dd {
-    position: relative;
-    display: block;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 13px;
-    line-height: 20px;
+	position: relative;
+	display: block;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 13px;
+	line-height: 20px;
+	background: #FAFAFA;
 }
 .dd-list {
-    display: block;
-    position: relative;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 .dd-list .dd-list {
-    padding-left: 30px;
+	padding-left: 30px;
 }
 .dd-collapsed .dd-list {
-    display: none;
+	display: none;
 }
 .dd-item,
 .dd-empty,
 .dd-placeholder {
-    display: block;
-    position: relative;
-    margin: 0;
-    padding: 0;
-    min-height: 20px;
-    font-size: 13px;
-    line-height: 20px;
+	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	min-height: 20px;
+	font-size: 13px;
+	line-height: 20px;
 }
 .dd-handle {
-    cursor: move;
-    display: block;
-    width: 22px;
-    height: 22px;
-    margin: 5px 0;
-    color: #333;
-    text-decoration: none;
-    border: 1px solid #ccc;
-    background: #fafafa;
-    background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
-    background: -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
-    background: linear-gradient(top, #fafafa 0%, #eee 100%);
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
+	cursor: move;
+	display: block;
+	width: 22px;
+	height: 22px;
+	margin: 11px 10px;
+	color: #333;
+	text-decoration: none;
+	border: 1px solid #ccc;
+	background: #fafafa;
+	background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
+	background: -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
+	background: linear-gradient(top, #fafafa 0%, #eee 100%);
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
 }
 .dd-handle:hover {
-    color: #2ea8e5;
-    background: #fff;
+	color: #2ea8e5;
+	background: #fff;
 }
 .dd-item > button {
-    display: block;
-    position: absolute;
-    cursor: pointer;
-    width: 22px;
-    height: 22px;
-    margin: 5px;
-    padding: 0;
-    text-indent: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    line-height: 1;
-    text-align: center;
-    font-weight: bold;
-    background: #fafafa;
-    background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
-    background: -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
-    background: linear-gradient(top, #fafafa 0%, #eee 100%);
-    border-radius: 3px;
+	display: block;
+	position: absolute;
+	cursor: pointer;
+	width: 22px;
+	height: 22px;
+	margin: 11px 8px;
+	padding: 0;
+	text-indent: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	border: 1px solid #ccc;
+	font-size: 16px;
+	line-height: 1;
+	text-align: center;
+	font-weight: bold;
+	background: #fafafa;
+	background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
+	background: -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
+	background: linear-gradient(top, #fafafa 0%, #eee 100%);
+	border-radius: 3px;
 }
 .dd-item > button:hover {
-    color: #2ea8e5;
-    background: #fff;
+	color: #2ea8e5;
+	background: #fff;
 }
 .dd-item > button:before {
-    content: "\f65e";
-    font-weight: 900;
-    font-family: "Font Awesome 5 Free";
-    display: block;
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    text-indent: 0;
+	content: "\f65e";
+	font-weight: 900;
+	font-family: "Font Awesome 5 Free";
+	display: block;
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	text-indent: 0;
 }
 .dd-item > button[data-action="collapse"]:before {
-    content: "\f65d";
+	content: "\f65d";
 }
 .dd-placeholder,
 .dd-empty {
-    margin: 5px 0;
-    padding: 0;
-    min-height: 30px;
-    background: #f2fbff;
-    border: 1px dashed #b6bcbf;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
+	/*margin: 5px 0;*/
+	margin-top:-1px;
+	z-index: 1;
+	padding: 0;
+	min-height: 30px;
+	background: #f2fbff;
+	border: 1px dashed #b6bcbf;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
 }
 .dd-empty {
-    border: 1px dashed #bbb;
-    min-height: 100px;
-    background-color: #e5e5e5;
-    background-image: -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
-    background-image: -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
-    background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
-    background-size: 60px 60px;
-    background-position: 0 0, 30px 30px;
+	border: 1px dashed #bbb;
+	min-height: 100px;
+	background-color: #e5e5e5;
+	background-image: -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+	background-image: -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+	background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+	background-size: 60px 60px;
+	background-position: 0 0, 30px 30px;
 }
 .dd-dragel {
-    position: absolute;
-    pointer-events: none;
-    z-index: 9999;
+	position: absolute;
+	pointer-events: none;
+	z-index: 9999;
 }
 .dd-dragel > .dd-item .dd-handle {
-    margin-top: 0;
+	/*margin-top: 0;*/
 }
 .dd-dragel .dd-handle {
-    -webkit-box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, .1);
-    box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, .1);
+	-webkit-box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, .1);
+	box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, .1);
 }
 .dd-hover > .dd-handle {
-    background: #2ea8e5 !important;
+	background: #2ea8e5 !important;
 }
 
 /**
  * Nestable Draggable Handles
  */
 .dd3-content {
-    display: flex;
-    align-items: center;
-    margin:5px 0px 5px -5px;
-    padding: 5px 10px 5px 35px;
-    color: #333;
-    text-decoration: none;
-    background:rgba(255,255,255,0.8);
-    border-radius: 3px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	/*margin:5px 0px 5px -5px;*/
+	padding: 10px;
+	color: #333;
+	text-decoration: none;
+	background:#FFF;
+	/*border-radius: 3px;*/
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
 }
+.dd-allowed .dd3-content {padding: 10px 10px 10px 40px;}
 .dd3-content:hover {
-    color: #2ea8e5;
-    background: #f0f0f0;
+	color: #2ea8e5;
+	background: #f0f0f0;
 }
 
 .dd3-content img {
-    border: 1px solid #ccc;
-    background: #fafafa;
-    background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
-    background: -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
-    background: linear-gradient(top, #fafafa 0%, #eee 100%);
-    border-radius: 3px;
+	border: 1px solid #ccc;
+	background: #fafafa;
+	background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
+	background: -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
+	background: linear-gradient(top, #fafafa 0%, #eee 100%);
+	border-radius: 3px;
 }
 
 .dd-childrens > .dd3-content {
-    padding: 5px 10px 5px 65px;
+	padding: 10px 10px 10px 70px;
 }
 .dd-dragel > .dd3-item > .dd3-content {
-    margin: 0;
+	margin: 0;
 }
 .dd3-item > button {
-    margin-left: 30px;
+	margin-left: 40px;
 }
 .dd3-handle {
-    position: absolute;
+	position: absolute;
+	z-index: 1;
 }
 .dd3-handle:before {
-    content: "\f0c9";
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
-    display: block;
-    text-align: center;
+	content: "\f0c9";
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+	display: block;
+	text-align: center;
 }
 .dd3-handle:hover {
-    /*background: #ddd;*/
+	/*background: #ddd;*/
 }
 
 
@@ -185,42 +190,54 @@
 /*-------*/
 
 .actionColumn{
-    display: inline;
-    position: absolute;
-    right: 12px;
+	display: inline;
+	position: absolute;
+	right: 12px;
 }
-
-li.dd-item.dd-childrens:before {
-    content: '';
-    position: absolute;
-    display: block;
-    width: 1px;
-    height: 100%;
-    height: calc(100% - 29px);
-    
-    top: 11px;
-    bottom: 0;
-    left: 11px;
-    background-color: #ebedf2;
+li.dd-item > .dd3-content {
+	min-height: 45px;
+	border-color: #ebedf2;
+	border-style: solid;
+	border-width: 1px;
+	border-right: 0px;
+	margin-top:-1px;
 }
-.dd-list:first-child > .dd-item:before {
-    height: 100%;
+.dd > .dd-list > .dd-item > .dd3-content {
+	border-left:0px;
 }
-.dd-list:first-child > .dd-item:after {
-    content:none;
+.dd > .dd-list > .dd-item:before {
+	/*content: none;*/
+	left: 21px;
+	top: 0px;
 }
-/*li.dd-item:last-child:before {
-    content:none;
-}*/
-
-li.dd-item:after {
-    content: '';
-    position: absolute;
-    display: block;
-    width: 18px;
-    height: 1px;
-    top: 15px;
-    bottom: 0;
-    left: -18px;
-    background-color: #ebedf2;
+.dd > .dd-list > .dd-allowed:first-child:before {
+	top: 11px;
+}
+.dd > .dd-list > .dd-allowed:last-child:before {
+	top: -26px;
+}
+.dd-list:first-child > .dd-allowed:after {
+	content:none;
+}
+li.dd-allowed:before,
+li.dd-allowed:after {
+	content: '';
+	position: absolute;
+	display: block;
+	background-color: #cbcdd2;
+}
+li.dd-allowed:before {
+	width: 1px;
+	height: 100%;
+	/*top: -20px;*/
+	/*bottom: 0;*/
+	bottom: 26px;
+	left: -9px;
+}
+li.dd-allowed:after {
+	width: 18px;
+	height: 1px;
+	top: 19px;
+	bottom: 0;
+	left: -8px;
 }

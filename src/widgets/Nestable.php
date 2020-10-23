@@ -7,7 +7,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
-use kilyakus\imageprocessor\Image;
+use kilyakus\helper\media\Image;
 use kilyakus\web\widgets as Widget;
 
 class Nestable extends \kilyakus\widgets\Widget
@@ -21,6 +21,7 @@ class Nestable extends \kilyakus\widgets\Widget
 
 	public $type = self::TYPE_WITH_HANDLE;
 
+	public $dragAllowed = true;
 	/**
 	 * @var string, the handle label, this is not HTML encoded
 	 */
@@ -121,17 +122,32 @@ class Nestable extends \kilyakus\widgets\Widget
 
 			$model = (object)$item;
 
-			$options = ArrayHelper::getValue($item, 'options', ['class' => 'dd-item dd3-item' . ($item['children'] ? ' dd-childrens' : '') ]);
+			$classList = ['dd-item', 'dd3-item'];
+
+			if($item['children'])
+			{
+				$classList[] = 'dd-childrens';
+			}
+			if($this->dragAllowed != false)
+			{
+				$classList[] = 'dd-allowed';
+			}
+
+			$options = ArrayHelper::getValue($item, 'options', ['class' => implode(' ', $classList) ]);
 			if(is_array($options)){
 				$options = ArrayHelper::merge($this->itemOptions, $options);
 			}else{
-				$options = ['class' => 'dd-item dd3-item' . ($item['children'] ? ' dd-childrens' : '') ];
+				$options = ['class' => implode(' ', $classList) ];
 			}
 			$dataId  = ArrayHelper::getValue($item, 'id', $dataid++);
 			$options = ArrayHelper::merge($options, ['data-id' => $dataId]);
 
 			$contentOptions = ArrayHelper::getValue($item, 'contentOptions', ['class' => 'dd3-content']);
-			$content = $this->handleLabel;
+			if($this->dragAllowed != false){
+				$content = $this->handleLabel;
+			}else{
+				$content = '';
+			}
 
 			$id = $item['id']; //id item
 
@@ -205,7 +221,6 @@ class Nestable extends \kilyakus\widgets\Widget
 			$links = Html::tag('div', $dropdown, ['class' => "actionColumn"]);
 			$item['content'] .= $links;
 
-
 			$content .= Html::tag('div', ArrayHelper::getValue($item, 'content', ''), $contentOptions);
 
 			$children = ArrayHelper::getValue($item, 'children', []);
@@ -237,14 +252,17 @@ class Nestable extends \kilyakus\widgets\Widget
 		foreach ($activeQuery->all() as $model) {
 
 			$content = [];
-
+			
 			$icon = ArrayHelper::getValue($this->modelOptions, 'icon', 'icon');
 
-			$icon = (is_callable($icon) ? call_user_func($icon, $model) : $model->{$icon});
+			if(isset($model->{$icon}))
+			{
+				$icon = (is_callable($icon) ? call_user_func($icon, $model) : $model->{$icon});
 
-			$icon = Html::img(Image::thumb($icon,22,22),['class' => 'img-rounded']);
+				$icon = Html::img(Image::thumb($icon,22,22),['class' => 'img-rounded']);
 
-			$content[] = Html::tag('td', $icon, ['style' => 'width:30px;min-width:30px;']);
+				$content[] = Html::tag('td', $icon, ['style' => 'width:30px;min-width:30px;']);
+			}
 
 			$name = ArrayHelper::getValue($this->modelOptions, 'name', 'name');
 
